@@ -1,0 +1,32 @@
+version: "2"
+sql:
+  - engine: mysql
+    queries: "resources/query.sql"
+    schema: "resources/schema.sql"
+    gen:
+      go:
+        package: "database"
+        out: "database"
+        
+overrides:
+  go:
+    rename:
+      tbl_school: School
+      tbl_class: Class
+      tbl_major: Major
+      tbl_semester: Semester
+      tbl_subject: Subject
+      tbl_subjects_access: SubjectAccess
+      tbl_subjects_teacher_access: SubjectTeacherAccess
+      tbl_user: User
+      tbl_users_access: UserAccess
+      tbl_users_teacher: Teacher
+      tbl_users_student: Student
+      tbl_auth_log: AuthLog
+      tbl_users_students_religion: Religion
+      tbl_users_students_religion_islam: ReligionIslam
+      tbl_users_students_religion_kristen: ReligionKristen
+      tbl_users_students_religion_katolik: ReligionKatolik
+      tbl_users_students_religion_hindu: ReligionHindu
+      tbl_users_students_religion_konghucu: ReligionKonghucu
+      tbl_users_students_religion_buddha: ReligionBuddha
