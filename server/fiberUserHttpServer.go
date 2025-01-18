@@ -15,6 +15,12 @@ func (f *fiberServer) initializeUserHttpHandler() {
 
 	routers := f.app.Group("/v1/users")
 
+	// WARNING: DON'T FORGET TO CHANGE THE 'mode' IN config.yaml FILE BEFORE MADE IT TO PUBLIC
+	// The codes below will allow unauthorized access to do CRUD if 'mode' is set to 'development'
+	if f.conf.Mode == "development" {
+		routers.Post("/__dev", httpHandler.CreateUser)
+	}
+
 	routers.Post("/", userMiddleware.LoggedUserAdmin, httpHandler.CreateUser)
 
 	routers.Post("/auth", httpHandler.LoginUser)

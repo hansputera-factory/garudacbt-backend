@@ -9,6 +9,7 @@ import (
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/idempotency"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
@@ -58,6 +59,7 @@ func (s *fiberServer) Start() {
 	s.app.Use(helmet.New())
 	s.app.Use(idempotency.New())
 	s.app.Use(cors.New())
+	s.app.Use(healthcheck.New(healthcheck.ConfigDefault))
 
 	s.app.Get("/fiber_metrics", monitor.New(monitor.Config{
 		Title: "GarudaCBTX Metrics",
@@ -84,6 +86,8 @@ func (s *fiberServer) Start() {
 		},
 		Filter: func(c *fiber.Ctx) bool {
 			exclusions := []string{
+				"GET:/livez",
+				"GET:/readyz",
 				"GET:/v1/schools",
 				"POST:/v1/users/auth",
 			}
