@@ -450,6 +450,25 @@ WHERE user.name LIKE sqlc.arg(query)
     AND user.school_id = sqlc.arg(school_id)
 ORDER BY user.id;
 
+-- name: GetUserByIdAndAccess :one
+SELECT sqlc.embed(user), sqlc.embed(user_access) FROM tbl_users as user
+INNER JOIN tbl_users_access as user_access
+    ON user.id = user_access.user_id
+WHERE user.id = sqlc.arg(user_id)
+    AND user_access.is_student = sqlc.arg(is_student)
+    AND user_access.is_admin = sqlc.arg(is_admin)
+    AND user_access.is_teacher = sqlc.arg(is_teacher)
+LIMIT 1;
+
+-- name: GetUserByNameOrEmail :one
+SELECT sqlc.embed(user), sqlc.embed(user_access) FROM tbl_users as user
+INNER JOIN tbl_users_access as user_access
+    ON user.id = user_access.user_id
+WHERE (user.email = sqlc.arg(user_query)
+    OR user.name = sqlc.arg(user_query))
+    AND user.school_id = sqlc.arg(school_id)
+LIMIT 1;
+
 -- name: CreateUserAccess :execresult
 INSERT INTO tbl_users_access (
     user_id,

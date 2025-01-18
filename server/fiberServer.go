@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/bytedance/sonic"
+	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
@@ -38,14 +39,11 @@ func NewFiberServer(conf *config.Config, db database.Database) Server {
 				code = e.Code
 			}
 
-			if strings.Contains(c.Request().URI().String(), "api") {
-				return c.Status(code).JSON(map[string]any{
-					"message": err.Error(),
-					"ok":      false,
-				})
-			}
-
-			return c.Status(code).SendString(err.Error())
+			return c.Status(code).JSON(map[string]any{
+				"status_code": code,
+				"message":     err.Error(),
+				"ok":          false,
+			})
 		},
 	})
 
@@ -65,7 +63,49 @@ func (s *fiberServer) Start() {
 		Title: "GarudaCBTX Metrics",
 	}))
 
+	s.app.Use(jwtware.New(jwtware.Config{
+		SigningKey: jwtware.SigningKey{
+			Key:    []byte(s.conf.Secrets.JwtKey),
+			JWTAlg: "H256",
+		},
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			code := fiber.StatusForbidden
+
+			var e *fiber.Error
+			if errors.As(err, &e) {
+				code = e.Code
+			}
+
+			return c.Status(code).JSON(map[string]any{
+				"status_code": code,
+				"message":     err.Error(),
+				"ok":          false,
+			})
+		},
+		Filter: func(c *fiber.Ctx) bool {
+			exclusions := []string{
+				"GET:/v1/schools",
+				"POST:/v1/users/auth",
+			}
+
+			for _, exclusion := range exclusions {
+				paths := strings.Split(exclusion, ":")
+				request_url := strings.TrimSuffix(string(c.Request().URI().Path()), "/")
+
+				if request_url == paths[1] && c.Route().Method == paths[0] {
+					return true
+				}
+			}
+
+			return false
+		},
+	}))
+
+	// School routes
 	s.initializeSchoolHttpHandler()
+
+	// User routes
+	s.initializeUserHttpHandler()
 
 	s.app.Listen(fmt.Sprintf("%s:%d", s.conf.Server.Host, s.conf.Server.Port))
 }

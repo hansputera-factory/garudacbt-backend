@@ -29,7 +29,7 @@ func (h *schoolHttpHandler) CreateSchool(c *fiber.Ctx) error {
 		return response(c, fiber.StatusBadRequest, err.Error(), false)
 	}
 
-	if err := h.schoolUsecase.SchoolDataProcessing(payload); err != nil {
+	if err := h.schoolUsecase.InsertSchool(payload); err != nil {
 		return response(c, fiber.StatusInternalServerError, err.Error(), false)
 	}
 

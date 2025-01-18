@@ -18,7 +18,7 @@ func NewSchoolUsecaseImpl(schoolRepository repositories.SchoolRepository) School
 	}
 }
 
-func (s *schoolUsecaseImpl) SchoolDataProcessing(in *models.AddSchoolModel) error {
+func (s *schoolUsecaseImpl) InsertSchool(in *models.AddSchoolModel) error {
 	insertPayload := &entities.InsertSchoolDto{
 		SchoolName: in.SchoolName,
 		ShortCode:  in.ShortCode,

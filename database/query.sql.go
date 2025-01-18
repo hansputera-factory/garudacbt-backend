@@ -689,6 +689,104 @@ func (q *Queries) GetUserById(ctx context.Context, arg GetUserByIdParams) (GetUs
 	return i, err
 }
 
+const getUserByIdAndAccess = `-- name: GetUserByIdAndAccess :one
+SELECT user.id, user.name, user.is_active, user.email, user.password, user.user_access_id, user.user_student_id, user.user_teacher_id, user.school_id, user.created_at, user.updated_at, user_access.id, user_access.user_id, user_access.school_id, user_access.is_student, user_access.is_admin, user_access.is_teacher FROM tbl_users as user
+INNER JOIN tbl_users_access as user_access
+    ON user.id = user_access.user_id
+WHERE user.id = ?
+    AND user_access.is_student = ?
+    AND user_access.is_admin = ?
+    AND user_access.is_teacher = ?
+LIMIT 1
+`
+
+type GetUserByIdAndAccessParams struct {
+	UserID    int64
+	IsStudent int32
+	IsAdmin   int32
+	IsTeacher int32
+}
+
+type GetUserByIdAndAccessRow struct {
+	User       User
+	UserAccess UserAccess
+}
+
+func (q *Queries) GetUserByIdAndAccess(ctx context.Context, arg GetUserByIdAndAccessParams) (GetUserByIdAndAccessRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByIdAndAccess,
+		arg.UserID,
+		arg.IsStudent,
+		arg.IsAdmin,
+		arg.IsTeacher,
+	)
+	var i GetUserByIdAndAccessRow
+	err := row.Scan(
+		&i.User.ID,
+		&i.User.Name,
+		&i.User.IsActive,
+		&i.User.Email,
+		&i.User.Password,
+		&i.User.UserAccessID,
+		&i.User.UserStudentID,
+		&i.User.UserTeacherID,
+		&i.User.SchoolID,
+		&i.User.CreatedAt,
+		&i.User.UpdatedAt,
+		&i.UserAccess.ID,
+		&i.UserAccess.UserID,
+		&i.UserAccess.SchoolID,
+		&i.UserAccess.IsStudent,
+		&i.UserAccess.IsAdmin,
+		&i.UserAccess.IsTeacher,
+	)
+	return i, err
+}
+
+const getUserByNameOrEmail = `-- name: GetUserByNameOrEmail :one
+SELECT user.id, user.name, user.is_active, user.email, user.password, user.user_access_id, user.user_student_id, user.user_teacher_id, user.school_id, user.created_at, user.updated_at, user_access.id, user_access.user_id, user_access.school_id, user_access.is_student, user_access.is_admin, user_access.is_teacher FROM tbl_users as user
+INNER JOIN tbl_users_access as user_access
+    ON user.id = user_access.user_id
+WHERE (user.email = ?
+    OR user.name = ?)
+    AND user.school_id = ?
+LIMIT 1
+`
+
+type GetUserByNameOrEmailParams struct {
+	UserQuery string
+	SchoolID  int64
+}
+
+type GetUserByNameOrEmailRow struct {
+	User       User
+	UserAccess UserAccess
+}
+
+func (q *Queries) GetUserByNameOrEmail(ctx context.Context, arg GetUserByNameOrEmailParams) (GetUserByNameOrEmailRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByNameOrEmail, arg.UserQuery, arg.UserQuery, arg.SchoolID)
+	var i GetUserByNameOrEmailRow
+	err := row.Scan(
+		&i.User.ID,
+		&i.User.Name,
+		&i.User.IsActive,
+		&i.User.Email,
+		&i.User.Password,
+		&i.User.UserAccessID,
+		&i.User.UserStudentID,
+		&i.User.UserTeacherID,
+		&i.User.SchoolID,
+		&i.User.CreatedAt,
+		&i.User.UpdatedAt,
+		&i.UserAccess.ID,
+		&i.UserAccess.UserID,
+		&i.UserAccess.SchoolID,
+		&i.UserAccess.IsStudent,
+		&i.UserAccess.IsAdmin,
+		&i.UserAccess.IsTeacher,
+	)
+	return i, err
+}
+
 const listActiveSubject = `-- name: ListActiveSubject :many
 SELECT id, name, short_code, is_active, is_universal, major_id, school_id, semester_id, created_at, updated_at FROM tbl_subjects
 WHERE semester_id = ? AND school_id = ? AND is_active = 1

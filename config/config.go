@@ -9,8 +9,9 @@ import (
 
 type (
 	Config struct {
-		Server *Server
+		Server   *Server
 		Database *Database
+		Secrets  *Secrets
 	}
 
 	Server struct {
@@ -19,17 +20,20 @@ type (
 	}
 
 	Database struct {
-		Host string
-		Port int
-		User string
+		Host     string
+		Port     int
+		User     string
 		Password string
-		DBName string
-		TimeZone string
+		DBName   string
+	}
+
+	Secrets struct {
+		JwtKey string
 	}
 )
 
 var (
-	once sync.Once
+	once           sync.Once
 	configInstance *Config
 )
 
@@ -44,8 +48,8 @@ func GetConfig() *Config {
 
 		if err := viper.ReadInConfig(); err != nil {
 			panic(err)
-		  }
-		  
+		}
+
 		if err := viper.Unmarshal(&configInstance); err != nil {
 			panic(err)
 		}

@@ -9,3 +9,6 @@ database:
   password: 1
   dbname: garuda-cbt
   timezone: Asia/Makassar
+
+secrets:
+  jwtkey: helloworld
