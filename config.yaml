@@ -12,3 +12,5 @@ database:
 
 secrets:
   jwtkey: helloworld
+
+mode: production # production | development

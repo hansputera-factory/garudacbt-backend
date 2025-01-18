@@ -12,6 +12,7 @@ type (
 		Server   *Server
 		Database *Database
 		Secrets  *Secrets
+		Mode     string
 	}
 
 	Server struct {
