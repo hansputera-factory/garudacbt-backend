@@ -66,7 +66,7 @@ func (s *fiberServer) Start() {
 	s.app.Use(jwtware.New(jwtware.Config{
 		SigningKey: jwtware.SigningKey{
 			Key:    []byte(s.conf.Secrets.JwtKey),
-			JWTAlg: "H256",
+			JWTAlg: "H512",
 		},
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			code := fiber.StatusForbidden
