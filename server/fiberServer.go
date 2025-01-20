@@ -61,10 +61,6 @@ func (s *fiberServer) Start() {
 
 	s.api = s.app.Group("/api")
 
-	s.app.Get("/fiber_metrics", monitor.New(monitor.Config{
-		Title: "GarudaCBTX Metrics",
-	}))
-
 	s.api.Use(jwtware.New(jwtware.Config{
 		SigningKey: jwtware.SigningKey{
 			Key:    []byte(s.conf.Secrets.JwtKey),
@@ -100,11 +96,18 @@ func (s *fiberServer) Start() {
 		},
 	}))
 
+	s.app.Get("/fiber_metrics", monitor.New(monitor.Config{
+		Title: "GarudaCBTX Metrics",
+	}))
+
 	// School routes
 	s.initializeSchoolHttpHandler()
 
 	// User routes
 	s.initializeUserHttpHandler()
+
+	// Route to index
+	s.app.Static("*", "./views/dist")
 
 	s.app.Listen(fmt.Sprintf("%s:%d", s.conf.Server.Host, s.conf.Server.Port))
 }
