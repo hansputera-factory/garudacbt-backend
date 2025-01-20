@@ -33,6 +33,10 @@ func (u *userUsecaseImpl) LoginUser(in *models.LoginUserModel) (*models.LoginUse
 	})
 
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("no user found")
+		}
+
 		return nil, err
 	}
 

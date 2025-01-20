@@ -22,6 +22,5 @@ func (f *fiberServer) initializeUserHttpHandler() {
 	}
 
 	routers.Post("/", userMiddleware.LoggedUserAdmin, httpHandler.CreateUser)
-
 	routers.Post("/auth", httpHandler.LoginUser)
 }
