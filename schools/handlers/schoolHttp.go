@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"hanifu.id/hansputera-factory/garudacbt-backend/internal/responses"
 	"hanifu.id/hansputera-factory/garudacbt-backend/schools/models"
 	"hanifu.id/hansputera-factory/garudacbt-backend/schools/usecases"
 )
@@ -19,19 +20,19 @@ func NewSchoolHttpHandler(schoolUsecase usecases.SchoolUsecase) SchoolHandler {
 }
 
 func (h *schoolHttpHandler) ListSchoolShortCodes(c *fiber.Ctx) error {
-	return responseWithData(c, fiber.StatusOK, true, h.schoolUsecase.ListSchoolOnlyShortCodes())
+	return responses.Response(c, fiber.StatusOK, "successfuly fetched", h.schoolUsecase.ListSchoolOnlyShortCodes())
 }
 
 func (h *schoolHttpHandler) CreateSchool(c *fiber.Ctx) error {
 	payload := new(models.AddSchoolModel)
 
 	if err := c.BodyParser(payload); err != nil {
-		return response(c, fiber.StatusBadRequest, err.Error(), false)
+		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
 	}
 
 	if err := h.schoolUsecase.InsertSchool(payload); err != nil {
-		return response(c, fiber.StatusInternalServerError, err.Error(), false)
+		return responses.Response(c, fiber.StatusInternalServerError, err.Error(), nil)
 	}
 
-	return response(c, fiber.StatusOK, fmt.Sprintf("School '%s' is created", payload.SchoolName), true)
+	return responses.Response(c, fiber.StatusOK, fmt.Sprintf("School '%s' is created", payload.SchoolName), payload)
 }

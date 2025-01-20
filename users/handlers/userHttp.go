@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"hanifu.id/hansputera-factory/garudacbt-backend/internal/responses"
 	"hanifu.id/hansputera-factory/garudacbt-backend/users/models"
 	"hanifu.id/hansputera-factory/garudacbt-backend/users/usecases"
 )
@@ -23,38 +24,38 @@ func (u *userHttpHandler) LoginUser(c *fiber.Ctx) error {
 	payload := new(models.LoginUserModel)
 
 	if err := c.BodyParser(payload); err != nil {
-		return response(c, fiber.StatusBadRequest, err.Error(), false)
+		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
 	}
 
 	payload.ClientIp = c.IP()
 	payload.ClientUseragent = c.Get("User-Agent")
 
 	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(payload); err != nil {
-		return response(c, fiber.StatusBadRequest, err.Error(), false)
+		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
 	}
 
 	result, err := u.userUsecase.LoginUser(payload)
 	if err != nil {
-		return response(c, fiber.StatusUnauthorized, err.Error(), false)
+		return responses.Response(c, fiber.StatusUnauthorized, err.Error(), nil)
 	}
 
-	return responseWithData(c, fiber.StatusOK, true, result)
+	return responses.Response(c, fiber.StatusOK, "successfuly login", result)
 }
 
 func (u *userHttpHandler) CreateUser(c *fiber.Ctx) error {
 	payload := new(models.AddUserModel)
 
 	if err := c.BodyParser(payload); err != nil {
-		return response(c, fiber.StatusBadRequest, err.Error(), false)
+		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
 	}
 
 	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(payload); err != nil {
-		return response(c, fiber.StatusBadRequest, err.Error(), false)
+		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
 	}
 
 	if err := u.userUsecase.CreateUser(payload); err != nil {
-		return response(c, fiber.StatusInternalServerError, err.Error(), false)
+		return responses.Response(c, fiber.StatusInternalServerError, err.Error(), nil)
 	}
 
-	return response(c, fiber.StatusOK, fmt.Sprintf("user %s successfuly created", payload.Name), true)
+	return responses.Response(c, fiber.StatusOK, fmt.Sprintf("user %s successfuly created", payload.Name), payload)
 }
