@@ -8,3 +8,7 @@ type UserMiddleware interface {
 	LoggedUserStudent(c *fiber.Ctx) error
 	LoggedUserTeacher(c *fiber.Ctx) error
 }
+
+type SchoolMiddleware interface {
+	OnlyAuthorizedKey(c *fiber.Ctx) error
+}

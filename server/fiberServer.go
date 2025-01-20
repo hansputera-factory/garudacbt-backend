@@ -20,6 +20,7 @@ import (
 
 type fiberServer struct {
 	app  *fiber.App
+	api  fiber.Router
 	db   database.Database
 	conf *config.Config
 }
@@ -58,11 +59,13 @@ func (s *fiberServer) Start() {
 	s.app.Use(cors.New())
 	s.app.Use(healthcheck.New(healthcheck.ConfigDefault))
 
+	s.api = s.app.Group("/api")
+
 	s.app.Get("/fiber_metrics", monitor.New(monitor.Config{
 		Title: "GarudaCBTX Metrics",
 	}))
 
-	s.app.Use(jwtware.New(jwtware.Config{
+	s.api.Use(jwtware.New(jwtware.Config{
 		SigningKey: jwtware.SigningKey{
 			Key:    []byte(s.conf.Secrets.JwtKey),
 			JWTAlg: "H512",
@@ -79,10 +82,9 @@ func (s *fiberServer) Start() {
 		},
 		Filter: func(c *fiber.Ctx) bool {
 			exclusions := []string{
-				"GET:/livez",
-				"GET:/readyz",
-				"GET:/v1/schools",
-				"POST:/v1/users/auth",
+				"GET:/api/v1/schools",
+				"POST:/api/v1/users/auth",
+				"POST:/api/v1/schools",
 			}
 
 			for _, exclusion := range exclusions {

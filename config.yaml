@@ -12,5 +12,6 @@ database:
 
 secrets:
   jwtkey: helloworld
+  authorizeKey: cbtx
 
 mode: development # production | development

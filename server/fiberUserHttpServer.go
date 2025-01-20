@@ -13,7 +13,7 @@ func (f *fiberServer) initializeUserHttpHandler() {
 	httpHandler := handlers.NewUserHttpHandler(usecase)
 	userMiddleware := middlewares.NewUserMiddlewareImpl(usecase)
 
-	routers := f.app.Group("/v1/users")
+	routers := f.api.Group("/v1/users")
 
 	// WARNING: DON'T FORGET TO CHANGE THE 'mode' IN config.yaml FILE BEFORE MADE IT TO PUBLIC
 	// The codes below will allow unauthorized access to do CRUD if 'mode' is set to 'development'

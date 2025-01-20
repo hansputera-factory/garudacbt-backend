@@ -29,7 +29,8 @@ type (
 	}
 
 	Secrets struct {
-		JwtKey string
+		JwtKey       string
+		AuthorizeKey string
 	}
 )
 
