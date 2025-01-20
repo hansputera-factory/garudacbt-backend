@@ -3,12 +3,14 @@ package server
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/bytedance/sonic"
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/idempotency"
@@ -106,7 +108,9 @@ func (s *fiberServer) Start() {
 	// User routes
 	s.initializeUserHttpHandler()
 
-	// Route to index
+	s.app.Use("/assets", filesystem.New(filesystem.Config{
+		Root: http.Dir("./views/dist/assets"),
+	}))
 	s.app.Static("*", "./views/dist")
 
 	s.app.Listen(fmt.Sprintf("%s:%d", s.conf.Server.Host, s.conf.Server.Port))
