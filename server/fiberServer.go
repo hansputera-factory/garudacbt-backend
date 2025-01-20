@@ -15,6 +15,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"hanifu.id/hansputera-factory/garudacbt-backend/config"
 	"hanifu.id/hansputera-factory/garudacbt-backend/database"
+	"hanifu.id/hansputera-factory/garudacbt-backend/internal/responses"
 )
 
 type fiberServer struct {
@@ -40,11 +41,7 @@ func NewFiberServer(conf *config.Config, db database.Database) Server {
 				code = e.Code
 			}
 
-			return c.Status(code).JSON(map[string]any{
-				"status_code": code,
-				"message":     err.Error(),
-				"ok":          false,
-			})
+			return responses.Response(c, code, err.Error(), nil)
 		},
 	})
 
@@ -78,11 +75,7 @@ func (s *fiberServer) Start() {
 				code = e.Code
 			}
 
-			return c.Status(code).JSON(map[string]any{
-				"status_code": code,
-				"message":     err.Error(),
-				"ok":          false,
-			})
+			return responses.Response(c, code, err.Error(), nil)
 		},
 		Filter: func(c *fiber.Ctx) bool {
 			exclusions := []string{
