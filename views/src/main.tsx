@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router'
 import './index.css'
 import { Routes } from './routes'
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('garudacbtx')!).render(
   <StrictMode>
     <BrowserRouter>
       <Routes />
