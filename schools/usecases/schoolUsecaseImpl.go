@@ -18,7 +18,7 @@ func NewSchoolUsecaseImpl(schoolRepository repositories.SchoolRepository) School
 	}
 }
 
-func (s *schoolUsecaseImpl) InsertSchool(in *models.AddSchoolModel) error {
+func (s *schoolUsecaseImpl) InsertSchool(in *models.AddSchoolModel) (int64, error) {
 	insertPayload := &entities.InsertSchoolDto{
 		SchoolName: in.SchoolName,
 		ShortCode:  in.ShortCode,
@@ -42,11 +42,11 @@ func (s *schoolUsecaseImpl) InsertSchool(in *models.AddSchoolModel) error {
 		},
 	}
 
-	if err := s.schoolRepository.InsertSchoolData(insertPayload); err != nil {
-		return err
+	if id, err := s.schoolRepository.InsertSchoolData(insertPayload); err != nil {
+		return 0, err
+	} else {
+		return id, nil
 	}
-
-	return nil
 }
 
 func (s *schoolUsecaseImpl) ListSchoolOnlyShortCodes() []string {

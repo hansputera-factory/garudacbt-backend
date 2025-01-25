@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"hanifu.id/hansputera-factory/garudacbt-backend/internal/responses"
 	"hanifu.id/hansputera-factory/garudacbt-backend/schools/models"
@@ -30,7 +31,11 @@ func (h *schoolHttpHandler) CreateSchool(c *fiber.Ctx) error {
 		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
 	}
 
-	if err := h.schoolUsecase.InsertSchool(payload); err != nil {
+	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(payload); err != nil {
+		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
+	}
+
+	if _, err := h.schoolUsecase.InsertSchool(payload); err != nil {
 		return responses.Response(c, fiber.StatusInternalServerError, err.Error(), nil)
 	}
 

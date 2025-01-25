@@ -82,7 +82,8 @@ func (s *fiberServer) Start() {
 			exclusions := []string{
 				"GET:/api/v1/schools",
 				"POST:/api/v1/users/auth",
-				"POST:/api/v1/schools",
+				"GET:/api/v1/install",
+				"POST:/api/v1/install",
 			}
 
 			for _, exclusion := range exclusions {
@@ -107,6 +108,9 @@ func (s *fiberServer) Start() {
 
 	// User routes
 	s.initializeUserHttpHandler()
+
+	// Installation routes
+	s.initializeInstallationHttpHandler()
 
 	s.app.Use("/assets", filesystem.New(filesystem.Config{
 		Root: http.Dir("./views/dist/assets"),

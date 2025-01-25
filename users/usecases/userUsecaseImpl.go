@@ -125,7 +125,7 @@ func (u *userUsecaseImpl) CreateUser(in *models.AddUserModel) error {
 	return u.userRepository.CreateUser(&entities.InsertUserDto{
 		RegisterUserParams: database.RegisterUserParams{
 			Username: in.Name,
-			IsActive: sql.NullInt32{Int32: 0},
+			IsActive: sql.NullInt32{Int32: 1},
 			Email:    in.Email,
 			SchoolID: in.SchoolID,
 			Password: string(encoded),

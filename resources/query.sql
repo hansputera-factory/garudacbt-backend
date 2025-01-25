@@ -28,7 +28,8 @@ INSERT INTO tbl_schools (
     headmaster_id,
     website,
     email,
-    app_name
+    app_name,
+    is_active
 ) VALUES (
     sqlc.arg(school_name),
     sqlc.arg(short_code),
@@ -40,7 +41,8 @@ INSERT INTO tbl_schools (
     sqlc.arg(headmaster_id),
     sqlc.narg(website),
     sqlc.narg(email),
-    sqlc.arg(app_name)
+    sqlc.arg(app_name),
+    sqlc.arg(is_active)
 );
 
 -- name: UpdateSchoolById :exec
@@ -99,6 +101,11 @@ SET
     app_name = CASE WHEN sqlc.narg(new_app_name) IS NOT NULL
         THEN sqlc.narg(new_app_name)
         ELSE app_name
+    END,
+
+    is_active = CASE WHEN sqlc.narg(new_is_active) IS NOT NULL
+        THEN sqlc.narg(new_is_active)
+        ELSE is_active
     END,
 
     updated_at = NOW()
@@ -401,7 +408,7 @@ INSERT INTO tbl_users (
     password
 ) VALUES (
     sqlc.arg(username),
-    sqlc.narg(is_active),
+    sqlc.arg(is_active),
     sqlc.arg(email),
     sqlc.arg(school_id),
     sqlc.arg(password)

@@ -93,7 +93,7 @@ type School struct {
 	Name             string
 	ShortCode        string
 	SchoolNationalID string
-	IsActive         int32
+	IsActive         sql.NullInt32
 	Address          sql.NullString
 	Latitude         sql.NullString
 	Longitude        sql.NullString
@@ -112,7 +112,7 @@ type Semester struct {
 	Name      string
 	Cycle     int32
 	Year      int32
-	IsActive  int32
+	IsActive  sql.NullInt32
 	SchoolID  int64
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
@@ -136,7 +136,7 @@ type Subject struct {
 	ID          int64
 	Name        string
 	ShortCode   string
-	IsActive    int32
+	IsActive    sql.NullInt32
 	IsUniversal int32
 	MajorID     int64
 	SchoolID    int64
@@ -173,7 +173,7 @@ type Teacher struct {
 type User struct {
 	ID            int64
 	Name          string
-	IsActive      int32
+	IsActive      sql.NullInt32
 	Email         string
 	Password      string
 	UserAccessID  sql.NullInt64

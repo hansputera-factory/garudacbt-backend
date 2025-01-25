@@ -16,19 +16,19 @@ func NewSchoolDbRepository(db database.Database) SchoolRepository {
 	return &schoolDbRepository{db: db, ctx: context.TODO()}
 }
 
-func (s *schoolDbRepository) InsertSchoolData(in *entities.InsertSchoolDto) error {
+func (s *schoolDbRepository) InsertSchoolData(in *entities.InsertSchoolDto) (int64, error) {
 	db := s.db.GetDb()
 
 	result, err := db.RegisterSchool(s.ctx, *in)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	if _, err := result.LastInsertId(); err != nil {
-		return err
+	if id, err := result.LastInsertId(); err != nil {
+		return 0, err
+	} else {
+		return id, nil
 	}
-
-	return nil
 }
 
 func (s *schoolDbRepository) ListSchoolShortCodes() []string {

@@ -9,6 +9,6 @@ type UserMiddleware interface {
 	LoggedUserTeacher(c *fiber.Ctx) error
 }
 
-type SchoolMiddleware interface {
+type InstallationMiddleware interface {
 	OnlyAuthorizedKey(c *fiber.Ctx) error
 }

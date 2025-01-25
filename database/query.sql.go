@@ -1147,7 +1147,7 @@ ORDER BY ss.name
 
 type ListSemesterParams struct {
 	SchoolID int64
-	IsActive int32
+	IsActive sql.NullInt32
 }
 
 type ListSemesterRow struct {
@@ -1652,8 +1652,10 @@ INSERT INTO tbl_schools (
     headmaster_id,
     website,
     email,
-    app_name
+    app_name,
+    is_active
 ) VALUES (
+    ?,
     ?,
     ?,
     ?,
@@ -1680,6 +1682,7 @@ type RegisterSchoolParams struct {
 	Website          sql.NullString
 	Email            sql.NullString
 	AppName          string
+	IsActive         sql.NullInt32
 }
 
 func (q *Queries) RegisterSchool(ctx context.Context, arg RegisterSchoolParams) (sql.Result, error) {
@@ -1695,6 +1698,7 @@ func (q *Queries) RegisterSchool(ctx context.Context, arg RegisterSchoolParams) 
 		arg.Website,
 		arg.Email,
 		arg.AppName,
+		arg.IsActive,
 	)
 }
 
@@ -2232,6 +2236,11 @@ SET
         ELSE app_name
     END,
 
+    is_active = CASE WHEN ? IS NOT NULL
+        THEN ?
+        ELSE is_active
+    END,
+
     updated_at = NOW()
 WHERE id = ?
 `
@@ -2248,6 +2257,7 @@ type UpdateSchoolByIdParams struct {
 	NewEmail            sql.NullString
 	NewLogoUrl          sql.NullString
 	NewAppName          sql.NullString
+	NewIsActive         sql.NullInt32
 	ID                  int64
 }
 
@@ -2275,6 +2285,8 @@ func (q *Queries) UpdateSchoolById(ctx context.Context, arg UpdateSchoolByIdPara
 		arg.NewLogoUrl,
 		arg.NewAppName,
 		arg.NewAppName,
+		arg.NewIsActive,
+		arg.NewIsActive,
 		arg.ID,
 	)
 	return err

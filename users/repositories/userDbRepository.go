@@ -87,15 +87,15 @@ func (u *userDbRepository) GetUserByIdAndAccess(in *entities.GetUserByIdAndAcces
 
 func (u *userDbRepository) CreateUser(in *entities.InsertUserDto) error {
 	db := u.db.GetDb()
-	payload := &database.RegisterUserParams{
-		IsActive: in.IsActive,
-		Username: in.Username,
-		Password: in.Password,
-		Email:    in.Email,
-		SchoolID: in.SchoolID,
+	payload := database.RegisterUserParams{
+		IsActive: in.RegisterUserParams.IsActive,
+		Username: in.RegisterUserParams.Username,
+		Password: in.RegisterUserParams.Password,
+		Email:    in.RegisterUserParams.Email,
+		SchoolID: in.RegisterUserParams.SchoolID,
 	}
 
-	result, err := db.RegisterUser(u.ctx, *payload)
+	result, err := db.RegisterUser(u.ctx, payload)
 	if err != nil {
 		return err
 	}

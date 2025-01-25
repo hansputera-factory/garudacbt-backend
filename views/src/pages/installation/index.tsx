@@ -10,24 +10,54 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { APIRoutes } from "@/lib/api-routes";
 
 export default function InstallationIndexPage() {
     const form = useForm<z.infer<typeof installationFormSchema>>({
         resolver: zodResolver(installationFormSchema),
         defaultValues: {
-            app_name: 'GarudaCBTX',
+            school: {
+                app_name: 'GarudaCBTX',
+            },
         },
         mode: 'all',
         shouldFocusError: true,
     });
+
+    const generateShortCode = (input: string): string => 
+        input
+          .split(/\s+/)
+          .map(word => /^\d+$/.test(word) ? word : word.toUpperCase())
+          .join("")
+          + Math.random().toString(36).slice(-4).toUpperCase();
     
-    const onSubmit = (values: z.infer<typeof installationFormSchema>) => {
-        console.log(values);
+    const onSubmit = async (values: z.infer<typeof installationFormSchema>) => {
+        const response = await APIRoutes.do([
+            APIRoutes.routes.install.insert,
+            {
+                school: {
+                    ...values.school,
+                    short_code: generateShortCode(values.school.name),
+                },
+                user: {
+                    ...values.user,
+                    email: values.school.email,
+                },
+            },
+            false,
+            {
+                headers: {
+                    'X-Authorized-Key': values.app_key,
+                },
+            }
+        ]);
+
+        console.log(response);
     }
 
     return (
         <React.Fragment>
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex items-center justify-center min-h-screen m-6">
                 <Card className="w-[800px]">
                     <CardHeader>
                         <CardTitle>
@@ -44,7 +74,7 @@ export default function InstallationIndexPage() {
                                     {/* School name */}
                                     <FormField
                                         control={form.control}
-                                        name="name"
+                                        name="school.name"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
@@ -64,7 +94,7 @@ export default function InstallationIndexPage() {
                                     {/* School National ID */}
                                     <FormField
                                         control={form.control}
-                                        name="school_national_id"
+                                        name="school.school_national_id"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
@@ -86,7 +116,7 @@ export default function InstallationIndexPage() {
                                     {/* School Short Code */}
                                     <FormField
                                         control={form.control}
-                                        name="short_code"
+                                        name="school.short_code"
                                         disabled
                                         render={({ field }) => (
                                             <FormItem>
@@ -105,12 +135,14 @@ export default function InstallationIndexPage() {
                                     />
                                 </div>
 
-                                <Separator />
+                                <Separator style={{
+                                    borderTop: '2px solid black',
+                                }} />
 
                                 {/* Address */}
                                 <FormField
                                     control={form.control}
-                                    name="address"
+                                    name="school.address"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
@@ -131,7 +163,7 @@ export default function InstallationIndexPage() {
                                 <div className="grid lg:grid-cols-2 gap-4">
                                     <FormField
                                         control={form.control}
-                                        name="longitude"
+                                        name="school.longitude"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
@@ -150,7 +182,7 @@ export default function InstallationIndexPage() {
 
                                     <FormField
                                         control={form.control}
-                                        name="latitude"
+                                        name="school.latitude"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
@@ -168,13 +200,15 @@ export default function InstallationIndexPage() {
                                     />
                                 </div>
 
-                                <Separator />
+                                <Separator style={{
+                                    borderTop: '2px solid black',
+                                }} />
 
                                 {/* Headmaster */}
                                 <div className="grid lg:grid-cols-2 gap-4">
                                     <FormField
                                         control={form.control}
-                                        name="headmaster_name"
+                                        name="school.headmaster_name"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
@@ -192,7 +226,7 @@ export default function InstallationIndexPage() {
                                     />
                                     <FormField
                                         control={form.control}
-                                        name="headmaster_id"
+                                        name="school.headmaster_id"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
@@ -210,13 +244,15 @@ export default function InstallationIndexPage() {
                                     />
                                 </div>
 
-                                <Separator />
+                                <Separator style={{
+                                    borderTop: '2px solid black',
+                                }} />
                                 
                                 <div className={cn('grid', 'lg:grid-cols-3', 'gap-4')}>
                                     {/* Website */}
                                     <FormField
                                         control={form.control}
-                                        name="website"
+                                        name="school.website"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
@@ -236,7 +272,7 @@ export default function InstallationIndexPage() {
                                     {/* Email */}
                                     <FormField
                                         control={form.control}
-                                        name="email"
+                                        name="school.email"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
@@ -255,7 +291,7 @@ export default function InstallationIndexPage() {
                                     {/* App Name */}
                                     <FormField
                                         control={form.control}
-                                        name="app_name"
+                                        name="school.app_name"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
@@ -266,6 +302,73 @@ export default function InstallationIndexPage() {
                                                 </FormControl>
                                                 <FormDescription>
                                                     You may customize the application name if needed (default to GarudaCBTX)
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                
+                                <Separator style={{
+                                    borderTop: '2px solid black',
+                                }} />
+
+                                <div className={cn('grid', 'lg:grid-cols-3', 'gap-4')}>
+                                    {/* App Key */}
+                                    <FormField
+                                        control={form.control}
+                                        name="app_key"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    Application Authorization Key
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Please input your secret authorization key here" {...field} />
+                                                </FormControl>
+                                                <FormDescription>
+                                                    Here is the secret key to grant confidential access
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    {/* User username */}
+                                    <FormField
+                                        control={form.control}
+                                        name="user.username"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    Administrator Username
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Please input your administrator username" {...field} />
+                                                </FormControl>
+                                                <FormDescription>
+                                                    Here you may custom your administrator username account
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    {/* User password */}
+                                    <FormField
+                                        control={form.control}
+                                        name="user.password"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    Administrator Password
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input type={'password'} placeholder="Please input your admin password account" {...field} />
+                                                </FormControl>
+                                                <FormDescription>
+                                                    You may customize your administrator account password here
                                                 </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
