@@ -44,7 +44,7 @@ func NewFiberServer(conf *config.Config, db database.Database) Server {
 				code = e.Code
 			}
 
-			return responses.Response(c, code, err.Error(), nil)
+			return responses.Response(c, code, err.Error(), nil, nil)
 		},
 	})
 
@@ -76,7 +76,7 @@ func (s *fiberServer) Start() {
 				code = e.Code
 			}
 
-			return responses.Response(c, code, err.Error(), nil)
+			return responses.Response(c, code, err.Error(), nil, nil)
 		},
 		Filter: func(c *fiber.Ctx) bool {
 			exclusions := []string{

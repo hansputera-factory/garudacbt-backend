@@ -23,5 +23,5 @@ func (i *installationMiddlewareImpl) OnlyAuthorizedKey(c *fiber.Ctx) error {
 		return c.Next()
 	}
 
-	return responses.Response(c, fiber.StatusUnauthorized, "unauthorized request", nil)
+	return responses.Response(c, fiber.StatusUnauthorized, "unauthorized request", nil, nil)
 }

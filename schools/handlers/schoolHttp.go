@@ -21,23 +21,23 @@ func NewSchoolHttpHandler(schoolUsecase usecases.SchoolUsecase) SchoolHandler {
 }
 
 func (h *schoolHttpHandler) ListSchoolShortCodes(c *fiber.Ctx) error {
-	return responses.Response(c, fiber.StatusOK, "successfuly fetched", h.schoolUsecase.ListSchoolOnlyShortCodes())
+	return responses.Response(c, fiber.StatusOK, "successfuly fetched", h.schoolUsecase.ListSchoolOnlyShortCodes(), nil)
 }
 
 func (h *schoolHttpHandler) CreateSchool(c *fiber.Ctx) error {
 	payload := new(models.AddSchoolModel)
 
 	if err := c.BodyParser(payload); err != nil {
-		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
+		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil, nil)
 	}
 
 	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(payload); err != nil {
-		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
+		return responses.Response(c, fiber.StatusBadRequest, "validation error", nil, err)
 	}
 
 	if _, err := h.schoolUsecase.InsertSchool(payload); err != nil {
-		return responses.Response(c, fiber.StatusInternalServerError, err.Error(), nil)
+		return responses.Response(c, fiber.StatusInternalServerError, err.Error(), nil, nil)
 	}
 
-	return responses.Response(c, fiber.StatusOK, fmt.Sprintf("School '%s' is created", payload.SchoolName), payload)
+	return responses.Response(c, fiber.StatusOK, fmt.Sprintf("School '%s' is created", payload.SchoolName), payload, nil)
 }

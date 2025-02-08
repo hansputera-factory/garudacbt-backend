@@ -24,38 +24,38 @@ func (u *userHttpHandler) LoginUser(c *fiber.Ctx) error {
 	payload := new(models.LoginUserModel)
 
 	if err := c.BodyParser(payload); err != nil {
-		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
+		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil, nil)
 	}
 
 	payload.ClientIp = c.IP()
 	payload.ClientUseragent = c.Get("User-Agent")
 
 	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(payload); err != nil {
-		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
+		return responses.Response(c, fiber.StatusBadRequest, "validation error", nil, err)
 	}
 
 	result, err := u.userUsecase.LoginUser(payload)
 	if err != nil {
-		return responses.Response(c, fiber.StatusUnauthorized, err.Error(), nil)
+		return responses.Response(c, fiber.StatusUnauthorized, err.Error(), nil, nil)
 	}
 
-	return responses.Response(c, fiber.StatusOK, "successfuly login", result)
+	return responses.Response(c, fiber.StatusOK, "successfuly login", result, nil)
 }
 
 func (u *userHttpHandler) CreateUser(c *fiber.Ctx) error {
 	payload := new(models.AddUserModel)
 
 	if err := c.BodyParser(payload); err != nil {
-		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
+		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil, nil)
 	}
 
 	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(payload); err != nil {
-		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
+		return responses.Response(c, fiber.StatusBadRequest, "validation error", nil, err)
 	}
 
 	if err := u.userUsecase.CreateUser(payload); err != nil {
-		return responses.Response(c, fiber.StatusInternalServerError, err.Error(), nil)
+		return responses.Response(c, fiber.StatusInternalServerError, err.Error(), nil, nil)
 	}
 
-	return responses.Response(c, fiber.StatusOK, fmt.Sprintf("user %s successfuly created", payload.Name), payload)
+	return responses.Response(c, fiber.StatusOK, fmt.Sprintf("user %s successfuly created", payload.Name), payload, nil)
 }

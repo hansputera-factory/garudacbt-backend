@@ -27,16 +27,16 @@ func NewInstallationHttpHandler(schoolUsecase schoolUsecases.SchoolUsecase, user
 func (i *installationHttpHandler) Install(c *fiber.Ctx) error {
 	payload := new(models.InsertInstallationModel)
 	if err := c.BodyParser(payload); err != nil {
-		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
+		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil, nil)
 	}
 
 	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(payload); err != nil {
-		return responses.Response(c, fiber.StatusBadRequest, err.Error(), nil)
+		return responses.Response(c, fiber.StatusBadRequest, "validation error", nil, err)
 	}
 
 	id, err := i.schoolUsecase.InsertSchool(&payload.School)
 	if err != nil {
-		return responses.Response(c, fiber.StatusInternalServerError, fmt.Sprintf("School: %s", err.Error()), nil)
+		return responses.Response(c, fiber.StatusInternalServerError, fmt.Sprintf("School: %s", err.Error()), nil, nil)
 	}
 
 	err = i.userUsecase.CreateUser(&usersModel.AddUserModel{
@@ -47,10 +47,10 @@ func (i *installationHttpHandler) Install(c *fiber.Ctx) error {
 		SchoolID: id,
 	})
 	if err != nil {
-		return responses.Response(c, fiber.StatusInternalServerError, fmt.Sprintf("User: %s", err.Error()), nil)
+		return responses.Response(c, fiber.StatusInternalServerError, fmt.Sprintf("User: %s", err.Error()), nil, nil)
 	}
 
-	return responses.Response(c, fiber.StatusOK, fmt.Sprintf("successfuly install %s", payload.School.SchoolName), payload)
+	return responses.Response(c, fiber.StatusOK, fmt.Sprintf("successfuly install %s", payload.School.SchoolName), payload, nil)
 }
 
 func (i *installationHttpHandler) CheckInstall(c *fiber.Ctx) error {
@@ -59,8 +59,8 @@ func (i *installationHttpHandler) CheckInstall(c *fiber.Ctx) error {
 	if len(schools) > 0 {
 		return responses.Response(c, fiber.StatusOK, "successfuly fetched", map[string]int{
 			"school_count": len(schools),
-		})
+		}, nil)
 	}
 
-	return responses.Response(c, fiber.StatusNotFound, "no school installed", nil)
+	return responses.Response(c, fiber.StatusNotFound, "no school installed", nil, nil)
 }
