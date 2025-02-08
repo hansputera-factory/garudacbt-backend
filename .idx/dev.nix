@@ -2,7 +2,6 @@
     packages = [
         pkgs.go_1_22
         pkgs.nodejs-slim_21
-        pkgs.github-cli
     ];
 
     # Enabling MySQL
