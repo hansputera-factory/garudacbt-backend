@@ -2,6 +2,7 @@
     packages = [
         pkgs.go_1_22
         pkgs.nodejs-slim_21
+        pkgs.sqlc
     ];
 
     # Enabling MySQL

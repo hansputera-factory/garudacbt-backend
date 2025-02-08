@@ -650,7 +650,7 @@ WHERE name LIKE sqlc.arg(query)
     OR national_teacher_id LIKE sqlc.arg(query)
     AND school_id = sqlc.arg(school_id)
     AND semester_id = sqlc.arg(semester_id)
-ORDER BY teacher.id;
+ORDER BY id;
 
 -- name: RegisterTeacher :execresult
 INSERT INTO tbl_users_teachers (
