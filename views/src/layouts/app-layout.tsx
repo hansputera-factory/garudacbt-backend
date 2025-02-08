@@ -1,16 +1,17 @@
 import useSWR from 'swr';
 import { useAuthStore } from "@/stores/auth-store"
 import React from 'react';
-import { APIRoutes } from '@/lib/api-routes';
+import { APIRoutes } from '@/utils/api-routes';
 import { ResponseType } from '@/types/response';
 
 import { Outlet } from 'react-router';
 
 export const AppLayout = () => {
     const authStore = useAuthStore();
-    const {isLoading, data, mutate} = useSWR<ResponseType<{}>>([APIRoutes.routes.install.check, undefined, false], APIRoutes.do);
+    const {isLoading, data, mutate} = useSWR(APIRoutes.routes.install.check, ([url, method]) => APIRoutes.do<ResponseType<{}>>(url, method));
 
     React.useEffect(() => {
+        console.log(data);
         if (data?.ok) {
             authStore.setInstalledStatus(true);
         } else {
